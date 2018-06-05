@@ -27,6 +27,7 @@ public enum LiquidFloatingActionButtonAnimateStyle : Int {
     case right
     case left
     case down
+    case radio
 }
 
 @IBDesignable
@@ -390,7 +391,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
         update(0.1, duration: openDuration) { cell, i, ratio in
             let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : 0
             let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
-            cell.center = self.center.plus(self.differencePoint(distance))
+            cell.center = self.center.plus(self.differencePoint(distance, number: i))
             cell.update(ratio, open: true)
         }
     }
@@ -398,12 +399,29 @@ class CircleLiquidBaseView : ActionBarBaseView {
     func updateClose() {
         update(0, duration: closeDuration) { cell, i, ratio in
             let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * (1 - ratio)
-            cell.center = self.center.plus(self.differencePoint(distance))
+            cell.center = self.center.plus(self.differencePoint(distance, number: i))
             cell.update(ratio, open: false)
         }
     }
-    
-    func differencePoint(_ distance: CGFloat) -> CGPoint {
+
+    func updateOpenRadio() {
+        update(0.1, duration: openDuration) { cell, i, ratio in
+            let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : 0
+            let distance = (cell.frame.height * 0.5 + cell.frame.height * 1.5) * posRatio
+            cell.center = self.center.plus(self.differencePointRadio(distance, number: i))
+            cell.update(ratio, open: true)
+        }
+    }
+
+    func updateCloseRadio() {
+        update(0, duration: closeDuration) { cell, i, ratio in
+            let distance = (cell.frame.height * 0.5 + cell.frame.height * 1.5) * (1 - ratio)
+            cell.center = self.center.plus(self.differencePointRadio(distance, number: i))
+            cell.update(ratio, open: false)
+        }
+    }
+
+    func differencePoint(_ distance: CGFloat, number: Int) -> CGPoint {
         switch animateStyle {
         case .up:
             return CGPoint(x: 0, y: -distance)
@@ -413,9 +431,36 @@ class CircleLiquidBaseView : ActionBarBaseView {
             return CGPoint(x: -distance, y: 0)
         case .down:
             return CGPoint(x: 0, y: distance)
+        case .radio:
+            return differencePointRadio(distance, number: number)
         }
     }
-    
+
+    func differencePointRadio(_ distance: CGFloat, number: Int) -> CGPoint {
+        let diagonalDistance = sqrt((2 * pow(distance, 2))) / 2
+        switch number {
+        case 0:
+            return CGPoint(x: -diagonalDistance, y: -diagonalDistance)
+        case 1:
+            return CGPoint(x: -distance, y: 0)
+        case 2:
+            return CGPoint(x: -diagonalDistance, y: diagonalDistance)
+        case 3:
+            return CGPoint(x: 0, y: distance)
+        case 4:
+            return CGPoint(x: diagonalDistance, y: diagonalDistance)
+        case 5:
+            return CGPoint(x: distance, y: 0)
+        case 6:
+            return CGPoint(x: diagonalDistance, y: -diagonalDistance)
+        case 7:
+            return CGPoint(x: 0, y: -distance)
+        default:
+            return CGPoint(x: 0, y: distance)
+        }
+    }
+            
+
     func stop() {
         for cell in openingCells {
             if enableShadow {
@@ -440,10 +485,10 @@ class CircleLiquidBaseView : ActionBarBaseView {
     func didDisplayRefresh(_ displayLink: CADisplayLink) {
         if opening {
             keyDuration += CGFloat(displayLink.duration)
-            updateOpen()
+            animateStyle == .radio ? updateOpenRadio() : updateOpen()
         } else {
             keyDuration += CGFloat(displayLink.duration)
-            updateClose()
+            animateStyle == .radio ? updateCloseRadio() : updateClose()
         }
     }
 
