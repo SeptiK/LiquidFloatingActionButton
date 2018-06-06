@@ -45,6 +45,7 @@ open class LiquidFloatingActionButton : UIView {
             setNeedsDisplay()
         }
     }
+    open var overrideCellColor = true
     
     weak open var delegate:   LiquidFloatingActionButtonDelegate?
     weak open var dataSource: LiquidFloatingActionButtonDataSource?
@@ -93,7 +94,10 @@ open class LiquidFloatingActionButton : UIView {
     }
 
     fileprivate func insertCell(_ cell: LiquidFloatingCell) {
-        cell.color  = self.color
+        if overrideCellColor {
+            cell.color  = self.color            
+        }
+        
         cell.radius = self.frame.width * cellRadiusRatio
         cell.center = self.center.minus(self.frame.origin)
         cell.actionButton = self
