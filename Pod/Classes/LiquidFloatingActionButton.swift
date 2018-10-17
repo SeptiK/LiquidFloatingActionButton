@@ -453,13 +453,14 @@ class CircleLiquidBaseView : ActionBarBaseView {
         case 3:
             return CGPoint(x: 0, y: distance)
         case 4:
-            return CGPoint(x: diagonalDistance, y: diagonalDistance)
-        case 5:
-            return CGPoint(x: distance, y: 0)
-        case 6:
-            return CGPoint(x: diagonalDistance, y: -diagonalDistance)
-        case 7:
             return CGPoint(x: 0, y: -distance)
+        case 5:
+            return CGPoint(x: diagonalDistance, y: diagonalDistance)
+        case 6:
+            return CGPoint(x: distance, y: 0)
+        case 7:
+            return CGPoint(x: diagonalDistance, y: -diagonalDistance)
+        
         default:
             return CGPoint(x: 0, y: distance)
         }
