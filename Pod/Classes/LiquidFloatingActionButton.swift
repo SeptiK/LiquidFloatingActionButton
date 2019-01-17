@@ -157,7 +157,7 @@ open class LiquidFloatingActionButton : UIView {
         
         // draw plus shape
         let plusLayer = CAShapeLayer()
-        plusLayer.lineCap = kCALineCapRound
+        plusLayer.lineCap = .round
         plusLayer.strokeColor = UIColor.white.cgColor
         plusLayer.lineWidth = 3.0
         
@@ -268,9 +268,9 @@ class ActionBarBaseView : UIView {
     func translateY(_ layer: CALayer, duration: CFTimeInterval, f: (CABasicAnimation) -> ()) {
         let translate = CABasicAnimation(keyPath: "transform.translation.y")
         f(translate)
-        translate.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        translate.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         translate.isRemovedOnCompletion = false
-        translate.fillMode = kCAFillModeForwards
+        translate.fillMode = .forwards
         translate.duration = duration
         layer.add(translate, forKey: "transYAnim")
     }
@@ -322,7 +322,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
     func open(_ cells: [LiquidFloatingCell]) {
         stop()
         displayLink = CADisplayLink(target: self, selector: #selector(CircleLiquidBaseView.didDisplayRefresh(_:)))
-        displayLink?.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
+        displayLink?.add(to: RunLoop.current, forMode: .common)
         opening = true
         for cell in cells {
             cell.layer.removeAllAnimations()
@@ -335,7 +335,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
         stop()
         opening = false
         displayLink = CADisplayLink(target: self, selector: #selector(CircleLiquidBaseView.didDisplayRefresh(_:)))
-        displayLink?.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
+        displayLink?.add(to: RunLoop.current, forMode: .common)
         for cell in cells {
             cell.layer.removeAllAnimations()
             cell.layer.eraseShadow()
@@ -516,6 +516,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
         return -1 * t * (t - 2)
     }
     
+    @objc
     func didDisplayRefresh(_ displayLink: CADisplayLink) {
         if opening {
             keyDuration += CGFloat(displayLink.duration)
@@ -568,7 +569,7 @@ open class LiquidFloatingCell : LiquittableCircle {
     }
     
     func setup(_ image: UIImage, tintColor: UIColor = UIColor.white) {
-        imageView.image = image.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        imageView.image = image.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = tintColor
         setupView(imageView)
     }
