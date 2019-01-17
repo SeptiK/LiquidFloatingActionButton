@@ -28,6 +28,7 @@ public enum LiquidFloatingActionButtonAnimateStyle : Int {
     case left
     case down
     case radio
+    case radioBottom
 }
 
 @IBDesignable
@@ -120,7 +121,7 @@ open class LiquidFloatingActionButton : UIView {
 		
         // rotate plus icon
         CATransaction.setAnimationDuration(0.8)
-        self.plusLayer.transform = CATransform3DMakeRotation((CGFloat(M_PI) * rotationDegrees) / 180, 0, 0, 1)
+        self.plusLayer.transform = CATransform3DMakeRotation((CGFloat(Double.pi) * rotationDegrees) / 180, 0, 0, 1)
 
         let cells = cellArray()
         for cell in cells {
@@ -378,15 +379,21 @@ class CircleLiquidBaseView : ActionBarBaseView {
             let ratio = easeInEaseOut((t - cellDelay) / duration)
             f(liquidCell, i, ratio)
         }
-
-        if let firstCell = openingCells.first {
-            bigEngine?.push(circle: baseLiquid!, other: firstCell)
-        }
-        for i in 1..<openingCells.count {
-            let prev = openingCells[i - 1]
-            let cell = openingCells[i]
-            self.engine?.color = prev.color
-            engine?.push(circle: prev, other: cell)
+        
+        if animateStyle == .radioBottom {
+            for i in 1..<openingCells.count {
+            _ = bigEngine?.push(circle: baseLiquid!, other: openingCells[i])
+            }
+        } else {
+            if let firstCell = openingCells.first {
+               _ =  bigEngine?.push(circle: baseLiquid!, other: firstCell)
+            }
+            for i in 1..<openingCells.count {
+                let prev = openingCells[i - 1]
+                let cell = openingCells[i]
+                self.engine?.color = prev.color
+                _ = engine?.push(circle: prev, other: cell)
+            }
         }
         engine?.draw(parent: baseLiquid!)
         bigEngine?.draw(parent: baseLiquid!)
@@ -436,13 +443,17 @@ class CircleLiquidBaseView : ActionBarBaseView {
             return CGPoint(x: -distance, y: 0)
         case .down:
             return CGPoint(x: 0, y: distance)
-        case .radio:
+        case .radio, .radioBottom:
             return differencePointRadio(distance, number: number)
         }
     }
 
     func differencePointRadio(_ distance: CGFloat, number: Int) -> CGPoint {
         let diagonalDistance = sqrt((2 * pow(distance, 2))) / 2
+        if animateStyle == .radioBottom {
+           return differencePointRadioBottom(distance, diagonalDistance: diagonalDistance, number: number)
+        }
+        
         switch number {
         case 0:
             return CGPoint(x: -diagonalDistance, y: -diagonalDistance)
@@ -465,7 +476,24 @@ class CircleLiquidBaseView : ActionBarBaseView {
             return CGPoint(x: 0, y: distance)
         }
     }
-            
+    
+    func differencePointRadioBottom(_ distance: CGFloat, diagonalDistance: CGFloat, number: Int) -> CGPoint {
+        let count = openingCells.count
+        switch number {
+        case 0:
+            return CGPoint(x: -distance, y: 0)
+        case 1:
+            return CGPoint(x: distance, y: 0)
+        case 2:
+            return count == 3 ? CGPoint(x: 0, y: -distance) : CGPoint(x: -diagonalDistance, y: -diagonalDistance)
+        case 3:
+            return CGPoint(x: diagonalDistance, y: diagonalDistance)
+        case 4:
+            return CGPoint(x: 0, y: -distance)
+        default:
+            return CGPoint(x: 0, y: 0)
+        }
+    }
 
     func stop() {
         for cell in openingCells {
