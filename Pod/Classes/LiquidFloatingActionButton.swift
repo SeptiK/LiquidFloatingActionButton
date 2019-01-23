@@ -302,6 +302,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
         self.frame = actionButton.frame
         self.center = actionButton.center.minus(actionButton.frame.origin)
         self.animateStyle = actionButton.animateStyle
+        self.enableShadow = actionButton.enableShadow
         let radius = min(self.frame.width, self.frame.height) * 0.5
         self.engine = SimpleCircleLiquidEngine(radiusThresh: radius * 0.73, angleThresh: 0.45)
         engine?.viscosity = viscosity
