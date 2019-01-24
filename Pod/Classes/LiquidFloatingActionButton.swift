@@ -41,7 +41,7 @@ open class LiquidFloatingActionButton : UIView {
             baseView.animateStyle = animateStyle
         }
     }
-    open var enableShadow = true {
+    open var enableShadow = false {
         didSet {
             setNeedsDisplay()
         }
@@ -292,7 +292,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
     var baseLiquid: LiquittableCircle?
     var engine:     SimpleCircleLiquidEngine?
     var bigEngine:  SimpleCircleLiquidEngine?
-    var enableShadow = true
+    var enableShadow = false
 
     fileprivate var openingCells: [LiquidFloatingCell] = []
     fileprivate var keyDuration: CGFloat = 0
@@ -519,12 +519,13 @@ class CircleLiquidBaseView : ActionBarBaseView {
     
     @objc
     func didDisplayRefresh(_ displayLink: CADisplayLink) {
+        let isRoundStyle = animateStyle == .radio || animateStyle == .radioBottom
+        keyDuration += CGFloat(displayLink.duration)
+
         if opening {
-            keyDuration += CGFloat(displayLink.duration)
-            animateStyle == .radio ? updateOpenRadio() : updateOpen()
+            isRoundStyle ? updateOpenRadio() : updateOpen()
         } else {
-            keyDuration += CGFloat(displayLink.duration)
-            animateStyle == .radio ? updateCloseRadio() : updateClose()
+            isRoundStyle ? updateCloseRadio() : updateClose()
         }
     }
 
